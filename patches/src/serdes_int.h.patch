@@ -1,0 +1,17 @@
+diff --git a/src/serdes_int.h b/src/serdes_int.h
+index d2f4e97..4034248 100644
+--- a/src/serdes_int.h
++++ b/src/serdes_int.h
+@@ -14,8 +14,11 @@
+  * limitations under the License.
+  */
+ #pragma once
+-
++#ifndef __s390x__
+ #include <sys/queue.h>
++#else
++#include <bsd/sys/queue.h>
++#endif
+ 
+ #include <avro.h>
+ 

@@ -1,0 +1,13 @@
+diff --git a/configure.self b/configure.self
+index 514e9c6..595dc17 100644
+--- a/configure.self
++++ b/configure.self
+@@ -28,7 +28,7 @@ function checks {
+     # Required libs
+     mkl_lib_check "jansson" "" fail CC "-ljansson"
+     mkl_lib_check "libcurl" "" fail CC "-lcurl"
+-    mkl_lib_check "libpthread" "" fail CC "-lpthread"
++    # mkl_lib_check "libpthread" "" fail CC "-lpthread"
+ 
+     # Older g++ (<=4.1?) gives invalid warnings for the C++ code.
+     mkl_mkvar_append CXXFLAGS CXXFLAGS "-Wno-non-virtual-dtor"

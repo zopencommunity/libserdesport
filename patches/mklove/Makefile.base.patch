@@ -1,0 +1,31 @@
+diff --git a/mklove/Makefile.base b/mklove/Makefile.base
+index 2ce15d7..4dcfd36 100755
+--- a/mklove/Makefile.base
++++ b/mklove/Makefile.base
+@@ -110,7 +110,7 @@ $(LIBFILENAME): $(OBJS) $(LIBNAME_LDS)
+ 	$(CC_LD) $(LDFLAGS) $(LIB_LDFLAGS) $(OBJS) -o $@ $(LIBS)
+ ifeq ($(WITH_STRIP),y)
+ 	cp $@ $(LIBFILENAMEDBG)
+-	$(STRIP) -S $@
++	$(STRIP) -S $@ || echo 0 
+ endif
+ 
+ $(LIBNAME).a:	$(OBJS)
+@@ -118,7 +118,7 @@ $(LIBNAME).a:	$(OBJS)
+ 	$(AR) rcs$(ARFLAGS) $@ $(OBJS)
+ ifeq ($(WITH_STRIP),y)
+ 	cp $@ $(LIBNAME)-dbg.a
+-	$(STRIP) -S $@
++	$(STRIP) -S $@ || echo 0 
+ 	$(RANLIB) $@
+ endif
+ 
+@@ -153,7 +153,7 @@ endif
+ 	cp $@ $(LIBNAME)-static-dbg.a
+ # The self-contained static library is always stripped, regardless
+ # of --enable-strip, since otherwise it would become too big.
+-	$(STRIP) -S $@
++	$(STRIP) -S $@ || echo 0 
+ 	$(RANLIB) $@
+ 
+ ifneq ($(MKL_DYNAMIC_LIBS),)

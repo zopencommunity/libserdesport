@@ -1,0 +1,97 @@
+diff --git a/src/tinycthread.c b/src/tinycthread.c
+index f83e9c5..8a34a99 100644
+--- a/src/tinycthread.c
++++ b/src/tinycthread.c
+@@ -53,9 +53,32 @@ freely, subject to the following restrictions:
+ extern "C" {
+ #endif
+ 
++#ifdef __MVS__
++static pthread_key_t thrd_is_detached;
++#else
+ #define __TLS __thread
+ static __TLS int thrd_is_detached;
++#endif
++
++void init_thrd_is_detached(void) {
++    int* value = (int*)malloc(sizeof(int));
++    *value = 0;
++    pthread_setspecific(thrd_is_detached, value);
++}
++
++void set_thrd_is_detached(int value) {
++    int* detached_status = (int*)pthread_getspecific(thrd_is_detached);
++    if (detached_status == NULL) {
++        init_thrd_is_detached();
++        detached_status = (int*)pthread_getspecific(thrd_is_detached);
++    }
++    *detached_status = value;
++}
+ 
++int get_thrd_is_detached(void) {
++    int* detached_status = (int*)pthread_getspecific(thrd_is_detached);
++    return *detached_status;
++}
+ 
+ int mtx_init(mtx_t *mtx, int type)
+ {
+@@ -143,6 +166,7 @@ int mtx_timedlock(mtx_t *mtx, const struct timespec *ts)
+   DWORD timeoutMs;
+ 
+   if (!mtx->mTimed)
++init_thrd_is_detached();
+   {
+     return thrd_error;
+   }
+@@ -604,7 +628,7 @@ static void * _thrd_wrapper_function(void * aArg)
+   return res;
+ #else
+   /* Avoid memory leak for detached threads by not allocating a return val */
+-  if (thrd_is_detached)
++  if (get_thrd_is_detached())
+     return NULL;
+   pres = malloc(sizeof(int));
+   if (pres != NULL)
+@@ -626,19 +650,22 @@ int thrd_create(thrd_t *thr, thrd_start_t func, void *arg)
+   }
+   ti->mFunction = func;
+   ti->mArg = arg;
+-
++  init_thrd_is_detached();
+   /* Create the thread */
+ #if defined(_TTHREAD_WIN32_)
+   *thr = CreateThread(NULL, 0, _thrd_wrapper_function, (LPVOID) ti, 0, NULL);
+ #elif defined(_TTHREAD_POSIX_)
++  if (pthread_key_create(&thrd_is_detached, NULL) == 0) {
++    thr->__ = 0;
++  }
+   if(pthread_create(thr, NULL, _thrd_wrapper_function, (void *)ti) != 0)
+   {
+-    *thr = 0;
++    thr->__ = 0;
+   }
+ #endif
+ 
+   /* Did we fail to create the thread? */
+-  if(!*thr)
++  if(!thr->__)
+   {
+     free(ti);
+     return thrd_error;
+@@ -660,14 +687,14 @@ int thrd_is_current(thrd_t thr) {
+ #if defined(_TTHREAD_WIN32_)
+ 	return GetThreadId(thr) == GetCurrentThreadId();
+ #else	
+-	return (pthread_self() == thr);
++	return (pthread_self().__ == thr.__);
+ #endif
+ }
+ 
+ 
+ int thrd_detach(thrd_t thr)
+ {
+-  thrd_is_detached = 1;
++  set_thrd_is_detached(1);
+ #if defined(_TTHREAD_WIN32_)
+   /* https://stackoverflow.com/questions/12744324/how-to-detach-a-thread-on-windows-c#answer-12746081 */
+   return CloseHandle(thr) != 0 ? thrd_success : thrd_error;
