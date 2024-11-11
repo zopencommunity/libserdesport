@@ -1,5 +1,5 @@
 export ZOPEN_STABLE_URL="https://github.com/confluentinc/libserdes.git"
-export ZOPEN_STABLE_DEPS="zoslib pkgconfig make grep avro jansson coreutils which curl librdkafka libbsd openssl zlib zstd lz4"
+export ZOPEN_STABLE_DEPS="zoslib pkgconfig make grep avro-c-lib jansson coreutils which curl librdkafka libbsd openssl zlib zstd lz4"
 export ZOPEN_BUILD_LINE="STABLE"
 export ZOPEN_COMP="clang"
 export ZOPEN_EXTRA_CFLAGS="-D_ALL_SOURCE -D_UNIX03_THREADS -D_POSIX_SOURCE -D_POSIX_C_SOURCE=200112L"
