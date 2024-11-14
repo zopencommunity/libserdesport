@@ -1,0 +1,15 @@
+diff --git a/src/serdes-common.h b/src/serdes-common.h
+index 07c8b71..cea740d 100644
+--- a/src/serdes-common.h
++++ b/src/serdes-common.h
+@@ -48,6 +48,10 @@ typedef enum {
+ #define SERDES_EXPORT __declspec(dllimport)
+ #endif
+ 
++#ifdef __MVS__
++#define	SERDES_EXPORT __attribute__((visibility("default")))
++#endif
++
+ #else
+ #define SERDES_EXPORT
+ #endif
